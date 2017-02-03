@@ -1071,8 +1071,10 @@ static int Fb_pan_display(struct fb_var_screeninfo *var, struct fb_info *info)
 		}
 	}
 
-	// Fb_wait_for_vsync(info);
-
+//B9 VSync Patch:
+//-	// Fb_wait_for_vsync(info);
+//+	Fb_wait_for_vsync(info);
+	Fb_wait_for_vsync(info);
 	return 0;
 }
 

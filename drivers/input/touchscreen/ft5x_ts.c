@@ -429,11 +429,11 @@ static int ctp_fetch_sysconfig_para(void)
 	}
 	pr_info("%s: ctp_twi_id is %d. \n", __func__, twi_id);
 
-	if(SCRIPT_PARSER_OK != script_parser_fetch("ctp_para", "ctp_screen_max_x", &screen_max_x, 1)){
+        if(SCRIPT_PARSER_OK != script_parser_fetch("ctp_para", "ctp_screen_max_x", &screen_max_x, 1)){
 		pr_err("%s: script_parser_fetch err. \n", __func__);
 		goto script_parser_fetch_err;
 	}
-	pr_info("%s: screen_max_x = %d. \n", __func__, screen_max_x);
+        pr_info("%s: screen_max_x = %d. \n", __func__, screen_max_x);
 
 	if(SCRIPT_PARSER_OK != script_parser_fetch("ctp_para", "ctp_screen_max_y", &screen_max_y, 1)){
 		pr_err("%s: script_parser_fetch err. \n", __func__);
@@ -514,6 +514,8 @@ static void ctp_wakeup(void)
 int ctp_detect(struct i2c_client *client, struct i2c_board_info *info)
 {
 	struct i2c_adapter *adapter = client->adapter;
+
+        pr_info("B9Debug: %s, adapter->nr == %d, twi_id == %d\n", __func__, adapter->nr, twi_id);
 
 	if(twi_id == adapter->nr)
 	{
@@ -1762,10 +1764,13 @@ ft5x_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		pr_info("%s:ctp_ops.set_irq_mode err.\n", __func__);
 		goto exit_set_irq_mode;
 	}
-	err = request_irq(SW_INT_IRQNO_PIO, ft5x_ts_interrupt, IRQF_TRIGGER_FALLING | IRQF_SHARED, "ft5x_ts", ft5x_ts);
+	//B9Patched From: err = request_irq(SW_INT_IRQNO_PIO, ft5x_ts_interrupt, IRQF_TRIGGER_FALLING | IRQF_SHARED, "ft5x_ts", ft5x_ts);
+	//According to https://www.olimex.com/forum/index.php?topic=3734.0
+	//To:
+        err = request_irq(SW_INT_IRQNO_PIO, ft5x_ts_interrupt, IRQF_SHARED, "ft5x_ts", ft5x_ts);
 
 	if (err < 0) {
-		dev_err(&client->dev, "ft5x_ts_probe: request irq failed\n");
+                dev_err(&client->dev, "ft5x_ts_probe: request irq failed\n");
 		goto exit_irq_request_failed;
 	}
 
@@ -1982,6 +1987,9 @@ static int __init ft5x_ts_init(void)
 	}
 
 	ret = i2c_add_driver(&ft5x_ts_driver);
+
+
+        pr_info("Driver Initialization Return Code: %d", ret);
 
 	return ret;
 }

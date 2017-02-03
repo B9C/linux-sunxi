@@ -474,6 +474,19 @@ config SPI_TLE62X0
 	  sysfs interface, with each line presented as a kind of GPIO
 	  exposing both switch control and diagnostic feedback.
 
+config SPI_SUN7I
+   tristate "SUN7I SPI Controller"
+   depends on ARCH_SUN7I
+   help
+       Allwinner Soc SPI controller,present on SUN7I chips.
+       
+config SUN7I_SPI_NDMA
+    bool "SUN7I SPI Normal DMA mode select"
+    depends on SPI_SUN7I
+    help
+      This selects SPI DMA mode with DMA transfer
+      Y select NDMA mode and N select DDMA mode
+
 #
 # Add new SPI protocol masters in alphabetical order above this line
 #
@@ -483,3 +496,4 @@ endif # SPI_MASTER
 # (slave support would go here)
 
 endif # SPI
+
