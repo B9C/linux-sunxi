@@ -100,7 +100,7 @@ static int __init realtek_init(void)
 	printk("( realtek_init )");
 
 	ret = phy_driver_register(&rtl821x_driver);
-
+	
 	printk("( realtek_init ) driver registration success: %d", ret);
 	int err = phy_register_fixup_for_uid(RTL821x_ID, RTL821x_ID_MASK, rtl821x_fixup);
 	printk("( realtek_init ) fixup registration success: %d", err);
