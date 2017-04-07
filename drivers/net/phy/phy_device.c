@@ -72,21 +72,16 @@ static int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
 int phy_register_fixup(const char *bus_id, u32 phy_uid, u32 phy_uid_mask,
 		int (*run)(struct phy_device *))
 {
-	printk("phy_register_fixup phy_uid:%d phy_uid_mask:%d", phy_uid, phy_uid_mask);
 	struct phy_fixup *fixup;
 
 	fixup = kzalloc(sizeof(struct phy_fixup), GFP_KERNEL);
 	if (!fixup)
-	{
-		printk("phy_register_fixup bad Allocation!");
 		return -ENOMEM;
-	}
 
 	strlcpy(fixup->bus_id, bus_id, sizeof(fixup->bus_id));
 	fixup->phy_uid = phy_uid;
 	fixup->phy_uid_mask = phy_uid_mask;
 	fixup->run = run;
-
 
 	mutex_lock(&phy_fixup_lock);
 	list_add_tail(&fixup->list, &phy_fixup_list);
@@ -133,24 +128,13 @@ static int phy_needs_fixup(struct phy_device *phydev, struct phy_fixup *fixup)
 /* Runs any matching fixups for this phydev */
 int phy_scan_fixups(struct phy_device *phydev)
 {
-	printk("phy_scan_fixups");
-
-	
-	mutex_lock(&phy_fixup_lock);
-	
-	//HACK run it here!!!!
-	printk("Hacking phydev.id: %d", phydev->phy_id);
-	int err = phy_write(phydev, 0x10, 0x017e);
-	printk("phy_write success: %d", err);
-
 	struct phy_fixup *fixup;
 
-
+	mutex_lock(&phy_fixup_lock);
 	list_for_each_entry(fixup, &phy_fixup_list, list) {
-		
 		if (phy_needs_fixup(phydev, fixup)) {
 			int err;
-			printk("Found Fixup and Running Fixup!");
+
 			err = fixup->run(phydev);
 
 			if (err < 0) {
